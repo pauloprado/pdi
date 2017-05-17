@@ -19,11 +19,14 @@ def div0( a, b ):
 
 def process(imgs):
 	for i in imgs:
-		img = cv2.imread(i, cv2.IMREAD_COLOR)
+		img = cv2.imread(i[0], cv2.IMREAD_COLOR)
+		gt = cv2.imread(i[1], cv2.IMREAD_GRAYSCALE)
+		cv2.normalize(gt, gt, 0.0, 1.0, cv2.NORM_MINMAX)
+
 		B, G, R = cv2.split(np.float32(img))
-		b = B/(B+G+R)
-		g = G/(B+G+R)
-		r = R/(B+G+R)
+		b = div0(B,(B+G+R))
+		g = div0(G,(B+G+R))
+		r = div0(R,(B+G+R))
 
 		# NGRDI
 		NGRDI = div0((G-R),(G+R))
