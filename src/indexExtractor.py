@@ -5,7 +5,8 @@ import numpy as np
 from sklearn import metrics
 import matplotlib.pyplot as plt
 
-idxsNames = ['NGRDI', 'ExG', 'CIVE', 'VEG', 'ExGR', 'WI']
+idxsLabels = ['NGRDI', 'ExG', 'CIVE', 'VEG', 'ExGR', 'WI']
+earlyFusonLabels = ['Arithmetic Mean', 'Geometric mean']
 
 parser = argparse.ArgumentParser(description='Extract vegetation indexes.')
 parser.add_argument('-i', action='store', dest='inputList')
@@ -13,17 +14,17 @@ parser.add_argument('-i', action='store', dest='inputList')
 
 args = parser.parse_args()
 
-def plot_roc(label, targets):
+def plot_roc(label, targets, labels):
 	i = 0
 	for target in targets:
 		fpr, tpr, thresholds = metrics.roc_curve(label, target)
-		print(idxsNames[i]+" AUC: "+str(metrics.roc_auc_score(label, target)))
-		plt.plot(fpr, tpr, lw=2, label=idxsNames[i])
+		print(labels[i]+" AUC: "+str(metrics.roc_auc_score(label, target)))
+		plt.plot(fpr[::200], tpr[::200], lw=2, label=labels[i])
+		plt.plot(np.array((1.00,0)), np.array((0,1.00)))
 		i=i+1
 	plt.legend()
 	plt.xlabel("False Positive Rate - FPR")
 	plt.ylabel("True Positive Rate - TPR")
-	# plt.title(title)
 	plt.show()
 
 def div0( a, b ):
@@ -31,6 +32,32 @@ def div0( a, b ):
         c = np.true_divide( a, b )
         c[ ~ np.isfinite( c )] = 0 
     return c
+
+def early_fusion(label, indices):
+	early_fusion_results = []
+	# Mean
+	mean = indices[0]
+	for i in range(1,len(indices),1):
+		mean = (mean + indices[i])
+	mean = mean/len(indices)
+	early_fusion_results.append(mean)
+	
+	# Geometric mean
+	# P = produtorio(P(i)[x,y])/(produtorio(P(i)[x,y]) + produtorio(1-P(i)))
+	geometricMean = indices[0]
+	geometricMeanRenorm = 1 - indices[0]
+	for i in range(1,len(indices),1):
+		geometricMean = geometricMean*indices[i]
+		geometricMeanRenorm = geometricMeanRenorm*(1-indices[i])
+	geometricMean = geometricMean/(geometricMean + geometricMeanRenorm)
+	early_fusion_results.append(geometricMean)
+
+	plot_roc(label, early_fusion_results, earlyFusonLabels)
+
+
+
+def late_fusion(label, indices):
+	print()
 
 def process(imgs):
 	gtAllImgs = np.array([])
@@ -78,8 +105,9 @@ def process(imgs):
 		cv2.normalize(WI, WI, 0.0, 1.0, cv2.NORM_MINMAX)
 		indices[5] = np.concatenate((indices[5], WI.ravel()))
 
-	plot_roc(gtAllImgs, indices)
-
+	plot_roc(gtAllImgs, indices, idxsLabels)
+	early_fusion(gtAllImgs, indices)
+	late_fusion(gtAllImgs, indices)
 
 
 def main():
