@@ -1,6 +1,7 @@
 import os
 import cv2
 import argparse
+import bob.measure
 import numpy as np
 from sklearn import metrics
 import matplotlib.pyplot as plt
@@ -19,9 +20,22 @@ def plot_roc(label, targets, labels):
 	for target in targets:
 		fpr, tpr, thresholds = metrics.roc_curve(label, target)
 		print(labels[i]+" AUC: "+str(metrics.roc_auc_score(label, target)))
-		plt.plot(fpr[::200], tpr[::200], lw=2, label=labels[i])
+		plt.plot(fpr[::10000], tpr[::10000], lw=2, label=labels[i])
 		plt.plot(np.array((1.00,0)), np.array((0,1.00)))
 		i=i+1
+
+		pos = np.where(label, target, -1)
+		posPos = np.where(pos>-1)
+		posVec = [target[i] for i in posPos]
+
+		neg = np.where(1-label, target, -1)
+		negPos = np.where(neg>-1)
+		negVec = [target[i] for i in negPos]
+		
+		print("EER: ", end='')
+		print(bob.measure.eer_threshold(negVec[0], posVec[0]))
+
+
 	plt.legend()
 	plt.xlabel("False Positive Rate - FPR")
 	plt.ylabel("True Positive Rate - TPR")
