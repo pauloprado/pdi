@@ -20,7 +20,7 @@ def plot_roc(label, targets, labels):
 	for target in targets:
 		fpr, tpr, thresholds = metrics.roc_curve(label, target)
 		print(labels[i]+" AUC: "+str(metrics.roc_auc_score(label, target)))
-		plt.plot(fpr[::10000], tpr[::10000], lw=2, label=labels[i])
+		plt.plot(fpr[::200], tpr[::200], lw=2, label=labels[i])
 		plt.plot(np.array((1.00,0)), np.array((0,1.00)))
 		i=i+1
 
@@ -32,8 +32,10 @@ def plot_roc(label, targets, labels):
 		negPos = np.where(neg>-1)
 		negVec = [target[i] for i in negPos]
 		
-		print("EER: ", end='')
-		print(bob.measure.eer_threshold(negVec[0], posVec[0]))
+		eer = bob.measure.eer_threshold(negVec[0], posVec[0])
+		far, frr = bob.measure.farfrr(negVec[0], posVec[0], eer)
+
+		print("EER: "+str(eer)+"\tFAR: "+str(far)+"\tFRR: "+str(frr))
 
 
 	plt.legend()
