@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 
 idxsLabels = ['NGRDI', 'ExG', 'CIVE', 'VEG', 'ExGR', 'WI']
 earlyFusonLabels = ['Arithmetic Mean', 'Geometric mean']
+eers = []
 
 parser = argparse.ArgumentParser(description='Extract vegetation indexes.')
 parser.add_argument('-i', action='store', dest='inputList')
@@ -34,6 +35,7 @@ def plot_roc(label, targets, labels):
 		
 		eer = bob.measure.eer_threshold(negVec[0], posVec[0])
 		far, frr = bob.measure.farfrr(negVec[0], posVec[0], eer)
+		eers.append(eer)
 
 		print("EER: "+str(eer)+"\tFAR: "+str(far)+"\tFRR: "+str(frr))
 
@@ -46,7 +48,7 @@ def plot_roc(label, targets, labels):
 def div0( a, b ):
     with np.errstate(divide='ignore', invalid='ignore'):
         c = np.true_divide( a, b )
-        c[ ~ np.isfinite( c )] = 0 
+        c[ ~ np.isfinite( c )] = 255 
     return c
 
 def early_fusion(label, indices):
