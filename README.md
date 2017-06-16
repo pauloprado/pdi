@@ -13,6 +13,11 @@ Results
 | Arithmetic Mean | 0.810 | 0.236 | 0.276 | 0.276 |
 | Geometric Mean | 0.817 | 0.0008| 0.275 | 0.275 |
 
+
+Late fusion
+|Method|Accuracy
+|:----------:|:-------------:|
+| Majority |  0.719 |
 ------------------
 
 Raw indices: 

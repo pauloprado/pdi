@@ -1,5 +1,6 @@
 import os
 import cv2
+import math
 import argparse
 import bob.measure
 import numpy as np
@@ -8,6 +9,7 @@ import matplotlib.pyplot as plt
 
 idxsLabels = ['NGRDI', 'ExG', 'CIVE', 'VEG', 'ExGR', 'WI']
 earlyFusonLabels = ['Arithmetic Mean', 'Geometric mean']
+lateFusionLabels = ['Majority']
 eers = []
 
 parser = argparse.ArgumentParser(description='Extract vegetation indexes.')
@@ -15,6 +17,13 @@ parser.add_argument('-i', action='store', dest='inputList')
 # parser.add_argument('-o', action='store', dest='output')
 
 args = parser.parse_args()
+
+def err_late(label, targets):
+	i = 0
+	for target in targets:
+		print(lateFusionLabels[i])
+		print("Accuracy: " + str(metrics.accuracy_score(label, target)))
+		i=i+1
 
 def plot_roc(label, targets, labels):
 	i = 0
@@ -75,7 +84,17 @@ def early_fusion(label, indices):
 
 
 def late_fusion(label, indices):
-	print()
+	i = 0
+	late_fusion_results = []
+	indicesThresholdeds = []
+	for indice in indices:
+		indicesThresholdeds.append(np.where(indice >= eers[i], 1, 0))
+		i = i + 1
+
+	for idx in range(1, len(indicesThresholdeds)):
+		indicesThresholdeds[0] = np.add(indicesThresholdeds[0], indicesThresholdeds[idx])
+	late_fusion_results.append(np.where(indicesThresholdeds[0] >= math.floor(len(idxsLabels)/2)+1, 1, 0).astype(float))
+	err_late(label, late_fusion_results)
 
 def process(imgs):
 	gtAllImgs = np.array([])
@@ -124,7 +143,7 @@ def process(imgs):
 		indices[5] = np.concatenate((indices[5], WI.ravel()))
 
 	plot_roc(gtAllImgs, indices, idxsLabels)
-	early_fusion(gtAllImgs, indices)
+	#early_fusion(gtAllImgs, indices)
 	late_fusion(gtAllImgs, indices)
 
 
