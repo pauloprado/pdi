@@ -15,9 +15,11 @@ Results
 
 
 Late fusion
+-------------
 |Method|Accuracy
 |:----------:|:-------------:|
 | Majority |  0.719 |
+
 ------------------
 
 Raw indices: 
