@@ -7,41 +7,69 @@ import numpy as np
 from sklearn import metrics
 import matplotlib.pyplot as plt
 
+# Vegetation indices
 idxsLabels = ['NGRDI', 'ExG', 'CIVE', 'VEG', 'ExGR', 'WI']
+
+# Early fusion methods
 earlyFusonLabels = ['Arithmetic Mean', 'Geometric mean']
+
+# Late fusion method
 lateFusionLabels = ['Majority']
+
+# Hold the eer (Equal error rate) for each index
 eers = []
 
+# Argument parsing
 parser = argparse.ArgumentParser(description='Extract vegetation indexes.')
 parser.add_argument('-i', action='store', dest='inputList')
-# parser.add_argument('-o', action='store', dest='output')
-
 args = parser.parse_args()
 
-def err_late(label, targets):
+'''
+	Calculate the accuracy
+	@param label The ground truth
+	@param targets List of arrays with the prediction of each pixel
+'''
+def accuracy_late(label, targets):
 	i = 0
 	for target in targets:
 		print(lateFusionLabels[i])
 		print("Accuracy: " + str(metrics.accuracy_score(label, target)))
-		i=i+1
+		i += 1
 
+'''
+	Plot the ROC curve and calculate the AUC, ERR, FAR and FRR
+	@param label The ground truth
+	@param targets List of arrays with the index value of each pixel
+	@param labels Label of each curve that will be plotted
+'''
 def plot_roc(label, targets, labels):
 	i = 0
 	for target in targets:
+		# Use SKLearn to get the False Positive Rate (fpr), True Positive Rate(tpr)
 		fpr, tpr, thresholds = metrics.roc_curve(label, target)
-		print(labels[i]+" AUC: "+str(metrics.roc_auc_score(label, target)))
-		plt.plot(fpr[::200], tpr[::200], lw=2, label=labels[i])
-		plt.plot(np.array((1.00,0)), np.array((0,1.00)))
-		i=i+1
 
+		print(labels[i]+" AUC: "+str(metrics.roc_auc_score(label, target)))
+
+		# Plot the FPR vs TPR (ROC curve)
+		plt.plot(fpr[::200], tpr[::200], lw=2, label=labels[i])
+		# Plot the straight to show the EER point
+		plt.plot(np.array((1.00,0)), np.array((0,1.00)))
+		i += 1
+
+		# Build an array where positive class will the their values, but the negative class will receive -1
 		pos = np.where(label, target, -1)
+		# Get position of all positive pixel (the position that isnt -1 value)
 		posPos = np.where(pos>-1)
+		# Build the array with only the values of positive class
 		posVec = [target[i] for i in posPos]
 
+		''' The same as the previous, but now for the negative class '''
 		neg = np.where(1-label, target, -1)
 		negPos = np.where(neg>-1)
 		negVec = [target[i] for i in negPos]
 		
+		# Use the Bob package from IDIAP
+		# Get the err value (Value where the False Acceptance Rate and the False Rejection Rate are equal)
 		eer = bob.measure.eer_threshold(negVec[0], posVec[0])
 		far, frr = bob.measure.farfrr(negVec[0], posVec[0], eer)
 		eers.append(eer)
@@ -54,12 +82,22 @@ def plot_roc(label, targets, labels):
 	plt.ylabel("True Positive Rate - TPR")
 	plt.show()
 
+'''
+	Function that doesnt let the division per zero five a NaN, substitute for 0 instead
+	@param a The dividend
+	@param b The divisor
+'''
 def div0( a, b ):
     with np.errstate(divide='ignore', invalid='ignore'):
         c = np.true_divide( a, b )
-        c[ ~ np.isfinite( c )] = 255 
+        c[ ~ np.isfinite( c )] = 0
     return c
 
+'''
+	Do the processing for the early fusion methods, which are the Arithmetic mean and the Geometric mean
+	@param label The ground truth, just pass forward in function call sequence
+	@param indices The value of each pixel for all the indeces
+'''
 def early_fusion(label, indices):
 	early_fusion_results = []
 	# Mean
@@ -81,32 +119,43 @@ def early_fusion(label, indices):
 
 	plot_roc(label, early_fusion_results, earlyFusonLabels)
 
-
-
+'''
+	Do the processing for the late fusion method, which is the majority voting
+	@param label The ground truth, just pass forward in function call sequence
+	@param indices The value of each pixel for all the indeces
+'''
 def late_fusion(label, indices):
 	i = 0
 	late_fusion_results = []
 	indicesThresholdeds = []
 	for indice in indices:
+		# Where the value of the prediction is greater or equal to EER value of that indice, 1 otherwise 0
 		indicesThresholdeds.append(np.where(indice >= eers[i], 1, 0))
-		i = i + 1
+		i += 1
 
+	# Sum all the value
 	for idx in range(1, len(indicesThresholdeds)):
 		indicesThresholdeds[0] = np.add(indicesThresholdeds[0], indicesThresholdeds[idx])
+	
+	# Where the sum of the 1's is greater than half of the indices, mean that this prediction has the majority of the votes
 	late_fusion_results.append(np.where(indicesThresholdeds[0] >= math.floor(len(idxsLabels)/2)+1, 1, 0).astype(float))
-	err_late(label, late_fusion_results)
+	accuracy_late(label, late_fusion_results)
 
 def process(imgs):
 	gtAllImgs = np.array([])
 	indices = [np.array([])]*6
 	for i in imgs:
 		indexes = []
+		# Read original image and the ground truth
 		img = cv2.imread(i[0], cv2.IMREAD_COLOR)
 		gt = cv2.imread(i[1], cv2.IMREAD_GRAYSCALE)
+
+		# Normalize the ground truth
 		cv2.normalize(gt, gt, 0.0, 1.0, cv2.NORM_MINMAX)
+		# Build a vector with all the ground truths
 		gtAllImgs = np.concatenate((gtAllImgs, gt.ravel()))
 
-
+		# Separate each channel
 		B, G, R = cv2.split(np.float32(img))
 		b = div0(B,(B+G+R))
 		g = div0(G,(B+G+R))
@@ -143,7 +192,7 @@ def process(imgs):
 		indices[5] = np.concatenate((indices[5], WI.ravel()))
 
 	plot_roc(gtAllImgs, indices, idxsLabels)
-	#early_fusion(gtAllImgs, indices)
+	early_fusion(gtAllImgs, indices)
 	late_fusion(gtAllImgs, indices)
 
 
