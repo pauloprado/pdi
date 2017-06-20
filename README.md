@@ -106,8 +106,8 @@ No filter:
 Early fusion:
 ![alt text][nofilter_early_fusion]
 
-[nofilter_early_fusion]: results/nofilter.png
-[early]: results/nofilter_early_fusion.png
+[nofilter]: results/nofilter.png
+[nofilter_early_fusion]: results/nofilter_early_fusion.png
 
 Blur: 
 ![alt text][blur]
