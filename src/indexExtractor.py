@@ -19,6 +19,8 @@ lateFusionLabels = ['Majority']
 # Hold the eer (Equal error rate) for each index
 eers = []
 
+filters = ['No Filter', 'Blur', 'Gaussian Filter', 'Mean Filter', 'Bilateral Filter']
+
 # Argument parsing
 parser = argparse.ArgumentParser(description='Extract vegetation indexes.')
 parser.add_argument('-i', action='store', dest='inputList')
@@ -141,13 +143,39 @@ def late_fusion(label, indices):
 	late_fusion_results.append(np.where(indicesThresholdeds[0] >= math.floor(len(idxsLabels)/2)+1, 1, 0).astype(float))
 	accuracy_late(label, late_fusion_results)
 
-def process(imgs):
+def filterImg(imgPath, filterType):
+	img = cv2.imread(imgPath, cv2.IMREAD_COLOR)
+
+	if filterType == 0: # No filter
+		# print(filters[i])
+		return img
+		pass
+	elif filterType == 1: # Normal blur
+		# print(filters[i])
+
+		return cv2.blur(img,(5,5))
+	elif filterType == 2: # Gaussian blur
+		# print(filters[i])
+		return cv2.GaussianBlur(img,(5,5),0)
+	elif filterType == 3: # Median blur
+		# print(filters[i])
+		return cv2.medianBlur(img,5)
+	elif filterType == 4: # Bilateral filter
+		# filters[i]
+		return cv2.bilateralFilter(img,3,25,75) #src,dst,d,sigmaColor,sigmaSpace; | sigmaColor High sigmaColor mean that father color well be mixed together
+
+
+'''
+	
+'''
+def process(imgs, filterType):
 	gtAllImgs = np.array([])
 	indices = [np.array([])]*6
 	for i in imgs:
 		indexes = []
 		# Read original image and the ground truth
-		img = cv2.imread(i[0], cv2.IMREAD_COLOR)
+		# img = cv2.imread(i[0], cv2.IMREAD_COLOR)
+		img = filterImg(i[0], filterType)
 		gt = cv2.imread(i[1], cv2.IMREAD_GRAYSCALE)
 
 		# Normalize the ground truth
@@ -202,7 +230,7 @@ def main():
 		imgs = []
 		for line in lines:
 			imgs.append(line.rstrip().split(' '))
-	process(imgs)
+	process(imgs, 4)
 if __name__=='__main__':
 	main()
 
