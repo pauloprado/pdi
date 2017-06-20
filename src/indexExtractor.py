@@ -24,6 +24,7 @@ filters = ['No Filter', 'Blur', 'Gaussian Filter', 'Mean Filter', 'Bilateral Fil
 # Argument parsing
 parser = argparse.ArgumentParser(description='Extract vegetation indexes.')
 parser.add_argument('-i', action='store', dest='inputList')
+parser.add_argument('-f', action='store', dest='filterType')
 args = parser.parse_args()
 
 '''
@@ -230,7 +231,8 @@ def main():
 		imgs = []
 		for line in lines:
 			imgs.append(line.rstrip().split(' '))
-	process(imgs, 4)
+
+	process(imgs, int(args.filterType))
 if __name__=='__main__':
 	main()
 
