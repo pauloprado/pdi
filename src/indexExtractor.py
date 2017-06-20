@@ -77,7 +77,10 @@ def plot_roc(label, targets, labels):
 		far, frr = bob.measure.farfrr(negVec[0], posVec[0], eer)
 		eers.append(eer)
 
-		print("EER: "+str(eer)+"\tFAR: "+str(far)+"\tFRR: "+str(frr))
+		prediction = np.where(target >= eer, 1, 0)
+		acc = metrics.accuracy_score(label, prediction)
+
+		print("EER: "+str(eer)+"\tFAR: "+str(far)+"\tFRR: "+str(frr)+"\tAccuracy: "+str(acc))
 
 
 	plt.legend()
