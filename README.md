@@ -256,3 +256,50 @@ Early fusion:
 
 [raw2]: results/Figure_1_lcrs2.png
 [early2]: results/Figure_early_fusion_lcrs2.png
+
+------------------
+
+No filter: 
+![alt text][nofilter_lcrs2]
+
+Early fusion:
+![alt text][nofilter_early_fusion_lcrs2]
+
+[nofilter_lcrs2]: results/nofilter_lcrs2.png
+[nofilter_early_fusion_lcrs2]: results/nofilter_early_fusion_lcrs2.png
+
+Blur: 
+![alt text][blur_lcrs2]
+
+Early fusion:
+![alt text][blur_early_lcrs2]
+
+[blur_lcrs2]: results/blur_lcrs2.png
+[blur_early_lcrs2]: results/blur_lcrs2_early.png
+
+Gaussian filter: 
+![alt text][gaussian_blur_lcrs2]
+
+Early fusion:
+![alt text][gaussian_blur_early_lcrs2]
+
+[gaussian_blur_lcrs2]: results/gaussian_lcrs2.png
+[gaussian_blur_early_lcrs2]: results/gaussian_lcrs2_early.png
+
+Mean filter: 
+![alt text][mean_lcrs2]
+
+Early fusion:
+![alt text][mean_early_lcrs2]
+
+[mean_lcrs2]: results/mean_lcrs2.png
+[mean_early_lcrs2]: results/mean_lcrs2_early.png
+
+Bilateral filter: 
+![alt text][bilateral_lcrs2]
+
+Early fusion:
+![alt text][bilateral_early_lcrs2]
+
+[bilateral_lcrs2]: results/bilateral_lcrs2.png
+[bilateral_early_lcrs2]: results/bilateral_lcrs2_early.png
