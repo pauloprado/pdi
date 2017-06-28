@@ -34,9 +34,9 @@ args = parser.parse_args()
 '''
 def accuracy_late(label, targets):
 	i = 0
+	print("|Method|Accuracy\n|:----------:|:-------------:|")
 	for target in targets:
-		print(lateFusionLabels[i])
-		print("Accuracy: " + str(metrics.accuracy_score(label, target)))
+		print("|"+lateFusionLabels[i]+"|"+"%.3f" % metrics.accuracy_score(label, target))
 		i += 1
 
 '''
@@ -47,11 +47,13 @@ def accuracy_late(label, targets):
 '''
 def plot_roc(label, targets, labels):
 	i = 0
+	print("results\n-------------\n|Method|AUC|EER|FAR|FRR|Accuracy")
+	print("|:----------:|:-------------:|:------:|:------:|:------:|:------:|")
 	for target in targets:
 		# Use SKLearn to get the False Positive Rate (fpr), True Positive Rate(tpr)
 		fpr, tpr, thresholds = metrics.roc_curve(label, target)
 
-		print(labels[i]+" AUC: "+str(metrics.roc_auc_score(label, target)))
+		print("|"+labels[i]+"|"+"%.3f" % metrics.roc_auc_score(label, target),end='')
 
 		# Plot the FPR vs TPR (ROC curve)
 		plt.plot(fpr[::200], tpr[::200], lw=2, label=labels[i])
@@ -80,7 +82,7 @@ def plot_roc(label, targets, labels):
 		prediction = np.where(target >= eer, 1, 0)
 		acc = metrics.accuracy_score(label, prediction)
 
-		print("EER: "+str(eer)+"\tFAR: "+str(far)+"\tFRR: "+str(frr)+"\tAccuracy: "+str(acc))
+		print("|"+"%.3f" % eer+"|"+"%.3f" % far+"|"+"%.3f" % frr+"|"+"%.3f" % acc+"|")
 
 
 	plt.legend()
@@ -182,6 +184,8 @@ def process(imgs, filterType):
 		img = filterImg(i[0], filterType)
 		gt = cv2.imread(i[1], cv2.IMREAD_GRAYSCALE)
 
+		imgNorm = cv2.normalize(img, 0.0, 1.0, cv2.NORM_MINMAX)
+
 		# Normalize the ground truth
 		cv2.normalize(gt, gt, 0.0, 1.0, cv2.NORM_MINMAX)
 		# Build a vector with all the ground truths
@@ -193,12 +197,19 @@ def process(imgs, filterType):
 		g = div0(G,(B+G+R))
 		r = div0(R,(B+G+R))
 
+		# Bnorm, Gnorm, Rnorm = cv2.split(np.float32(imgNorm))
+		# bNorm = div0(Bnorm,(Bnorm+Gnorm+Rnorm))
+		# gNorm = div0(Gnorm,(Bnorm+Gnorm+Rnorm))
+		# rNorm = div0(Rnorm,(Bnorm+Gnorm+Rnorm))
+
+
 		# NGRDI
 		NGRDI = div0((G-R),(G+R))
 		cv2.normalize(NGRDI, NGRDI, 0.0, 1.0, cv2.NORM_MINMAX)
 		indices[0] = np.concatenate((indices[0], NGRDI.ravel()))
 
 		# ExG
+		# ExG = 2*gNorm-rNorm-bNorm
 		ExG = 2*g-r-b
 		cv2.normalize(ExG, ExG, 0.0, 1.0, cv2.NORM_MINMAX)
 		indices[1] = np.concatenate((indices[1], ExG.ravel()))
