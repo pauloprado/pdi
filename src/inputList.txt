@@ -1,0 +1,4 @@
+../data/img08.png ../data/gt08.png
+../data/img13.png ../data/gt13.png
+../data/img30.png ../data/gt30.png
+../data/img34.png ../data/gt34.png

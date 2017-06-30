@@ -1,5 +1,16 @@
 # pdi
 
+Usage:
+python indexExtractor -i list.txt -f [filterType]
+
+Where the list.txt must have the img and the ground truth in the same line.
+[filterType]:
+0 -> No filter
+1 -> Blur
+2 -> Gaussian filter
+3 -> Mean filter
+4 -> Bilateral filter
+
 No filter results
 -------------
 |Method|AUC|EER|FAR|FRR|Accuracy
@@ -24,7 +35,7 @@ Blur results
 -------------
 |Method|AUC|EER|FAR|FRR|Accuracy
 |:----------:|:-------------:|:------:|:------:|:------:|:------:|
-|NGRDI | 0.890| 0.389	| 0.199	| 0.199 |  0.800 |
+|NGRDI | 0.890| 0.389	| 0.199	| 0.199 |  0.800 | 
 |ExG | 0.852 | 0.313	| 0.243	| 0.243 | 0.756 |
 |CIVE | 0.854 | 0.313	| 0.242	| 0.242 | 0.758 |
 |VEG | 0.851| 0.287	| 0.2465	| 0.246 | 0.754 |
