@@ -6,26 +6,19 @@ import bob.measure
 import numpy as np
 from sklearn import metrics
 import matplotlib.pyplot as plt
-
-# Vegetation indices
-idxsLabels = ['NGRDI', 'ExG', 'CIVE', 'VEG', 'ExGR', 'WI']
-
-# Early fusion methods
-earlyFusonLabels = ['Arithmetic Mean', 'Geometric mean']
-
-# Late fusion method
-lateFusionLabels = ['Majority']
+import Utils
 
 # Hold the eer (Equal error rate) for each index
 eers = []
-
-filters = ['No Filter', 'Blur', 'Gaussian Filter', 'Mean Filter', 'Bilateral Filter']
 
 # Argument parsing
 parser = argparse.ArgumentParser(description='Extract vegetation indexes.')
 parser.add_argument('-i', action='store', dest='inputList')
 parser.add_argument('-f', action='store', dest='filterType')
+parser.add_argument('-o', action='store', dest='outputDir')
 args = parser.parse_args()
+
+filterType = 0
 
 '''
 	Calculate the accuracy
@@ -34,9 +27,9 @@ args = parser.parse_args()
 '''
 def accuracy_late(label, targets):
 	i = 0
-	print("|Method|Accuracy\n|:----------:|:-------------:|")
+	print("\n-------------\n|Method|Accuracy|\n|:----------:|:-------------:|")
 	for target in targets:
-		print("|"+lateFusionLabels[i]+"|"+"%.3f" % metrics.accuracy_score(label, target))
+		print("|"+Utils.lateFusionLabels[i]+"|"+"%.3f" % metrics.accuracy_score(label, target))
 		i += 1
 
 '''
@@ -45,9 +38,9 @@ def accuracy_late(label, targets):
 	@param targets List of arrays with the index value of each pixel
 	@param labels Label of each curve that will be plotted
 '''
-def plot_roc(label, targets, labels):
+def plot_roc(label, targets, labels, fusion):
 	i = 0
-	print("results\n-------------\n|Method|AUC|EER|FAR|FRR|Accuracy")
+	print("\n-------------\n|Method|AUC|EER|FAR|FRR|Accuracy|")
 	print("|:----------:|:-------------:|:------:|:------:|:------:|:------:|")
 	for target in targets:
 		# Use SKLearn to get the False Positive Rate (fpr), True Positive Rate(tpr)
@@ -88,18 +81,9 @@ def plot_roc(label, targets, labels):
 	plt.legend()
 	plt.xlabel("False Positive Rate - FPR")
 	plt.ylabel("True Positive Rate - TPR")
-	plt.show()
-
-'''
-	Function that doesnt let the division per zero five a NaN, substitute for 0 instead
-	@param a The dividend
-	@param b The divisor
-'''
-def div0( a, b ):
-    with np.errstate(divide='ignore', invalid='ignore'):
-        c = np.true_divide( a, b )
-        c[ ~ np.isfinite( c )] = 0
-    return c
+	# plt.show()
+	plt.savefig(Utils.buildFileName(filterType, fusion, args.outputDir))
+	plt.clf()
 
 '''
 	Do the processing for the early fusion methods, which are the Arithmetic mean and the Geometric mean
@@ -125,7 +109,7 @@ def early_fusion(label, indices):
 	geometricMean = geometricMean/(geometricMean + geometricMeanRenorm)
 	early_fusion_results.append(geometricMean)
 
-	plot_roc(label, early_fusion_results, earlyFusonLabels)
+	plot_roc(label, early_fusion_results, Utils.earlyFusonLabels, "earlyFusion")
 
 '''
 	Do the processing for the late fusion method, which is the majority voting
@@ -146,42 +130,35 @@ def late_fusion(label, indices):
 		indicesThresholdeds[0] = np.add(indicesThresholdeds[0], indicesThresholdeds[idx])
 	
 	# Where the sum of the 1's is greater than half of the indices, mean that this prediction has the majority of the votes
-	late_fusion_results.append(np.where(indicesThresholdeds[0] >= math.floor(len(idxsLabels)/2)+1, 1, 0).astype(float))
+	late_fusion_results.append(np.where(indicesThresholdeds[0] >= math.floor(len(Utils.idxsLabels)/2)+1, 1, 0).astype(float))
 	accuracy_late(label, late_fusion_results)
 
-def filterImg(imgPath, filterType):
+def filterImg(imgPath):
 	img = cv2.imread(imgPath, cv2.IMREAD_COLOR)
 
 	if filterType == 0: # No filter
-		# print(filters[i])
 		return img
-		pass
 	elif filterType == 1: # Normal blur
-		# print(filters[i])
-
 		return cv2.blur(img,(5,5))
 	elif filterType == 2: # Gaussian blur
-		# print(filters[i])
 		return cv2.GaussianBlur(img,(5,5),0)
 	elif filterType == 3: # Median blur
-		# print(filters[i])
 		return cv2.medianBlur(img,5)
 	elif filterType == 4: # Bilateral filter
-		# filters[i]
 		return cv2.bilateralFilter(img,3,25,75) #src,dst,d,sigmaColor,sigmaSpace; | sigmaColor High sigmaColor mean that father color well be mixed together
 
 
 '''
 	
 '''
-def process(imgs, filterType):
+def process(imgs):
 	gtAllImgs = np.array([])
 	indices = [np.array([])]*6
 	for i in imgs:
 		indexes = []
 		# Read original image and the ground truth
 		# img = cv2.imread(i[0], cv2.IMREAD_COLOR)
-		img = filterImg(i[0], filterType)
+		img = filterImg(i[0])
 		gt = cv2.imread(i[1], cv2.IMREAD_GRAYSCALE)
 
 		imgNorm = cv2.normalize(img, 0.0, 1.0, cv2.NORM_MINMAX)
@@ -193,9 +170,9 @@ def process(imgs, filterType):
 
 		# Separate each channel
 		B, G, R = cv2.split(np.float32(img))
-		b = div0(B,(B+G+R))
-		g = div0(G,(B+G+R))
-		r = div0(R,(B+G+R))
+		b = Utils.div0(B,(B+G+R))
+		g = Utils.div0(G,(B+G+R))
+		r = Utils.div0(R,(B+G+R))
 
 		# Bnorm, Gnorm, Rnorm = cv2.split(np.float32(imgNorm))
 		# bNorm = div0(Bnorm,(Bnorm+Gnorm+Rnorm))
@@ -204,7 +181,7 @@ def process(imgs, filterType):
 
 
 		# NGRDI
-		NGRDI = div0((G-R),(G+R))
+		NGRDI = Utils.div0((G-R),(G+R))
 		cv2.normalize(NGRDI, NGRDI, 0.0, 1.0, cv2.NORM_MINMAX)
 		indices[0] = np.concatenate((indices[0], NGRDI.ravel()))
 
@@ -220,7 +197,7 @@ def process(imgs, filterType):
 		indices[2] = np.concatenate((indices[2], CIVE.ravel()))
 
 		# VEG
-		VEG = div0(g, 2+(r**0.667)*(b**(1-0.667)))
+		VEG = Utils.div0(g, 2+(r**0.667)*(b**(1-0.667)))
 		cv2.normalize(VEG, VEG, 0.0, 1.0, cv2.NORM_MINMAX)
 		indices[3] = np.concatenate((indices[3], VEG.ravel()))
 
@@ -230,11 +207,11 @@ def process(imgs, filterType):
 		indices[4] = np.concatenate((indices[4], ExGR.ravel()))
 
 		# WI
-		WI = div0((g-b),(r-g+255))
+		WI = Utils.div0((g-b),(r-g+255))
 		cv2.normalize(WI, WI, 0.0, 1.0, cv2.NORM_MINMAX)
 		indices[5] = np.concatenate((indices[5], WI.ravel()))
 
-	plot_roc(gtAllImgs, indices, idxsLabels)
+	plot_roc(gtAllImgs, indices, Utils.idxsLabels, "noFusion")
 	early_fusion(gtAllImgs, indices)
 	late_fusion(gtAllImgs, indices)
 
@@ -245,8 +222,8 @@ def main():
 		imgs = []
 		for line in lines:
 			imgs.append(line.rstrip().split(' '))
-
-	process(imgs, int(args.filterType))
+	filterType = int(args.filterType)
+	process(imgs)
 if __name__=='__main__':
 	main()
 
