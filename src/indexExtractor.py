@@ -29,7 +29,7 @@ def accuracy_late(label, targets):
 	i = 0
 	print("\n-------------\n|Method|Accuracy|\n|:----------:|:-------------:|")
 	for target in targets:
-		print("|"+Utils.lateFusionLabels[i]+"|"+"%.3f" % metrics.accuracy_score(label, target))
+		print("|"+Utils.lateFusionLabels[i]+"|"+"%.3f" % metrics.accuracy_score(label, target)+"|")
 		i += 1
 
 '''
@@ -134,6 +134,7 @@ def late_fusion(label, indices):
 	accuracy_late(label, late_fusion_results)
 
 def filterImg(imgPath):
+	global filterType
 	img = cv2.imread(imgPath, cv2.IMREAD_COLOR)
 
 	if filterType == 0: # No filter
@@ -157,7 +158,6 @@ def process(imgs):
 	for i in imgs:
 		indexes = []
 		# Read original image and the ground truth
-		# img = cv2.imread(i[0], cv2.IMREAD_COLOR)
 		img = filterImg(i[0])
 		gt = cv2.imread(i[1], cv2.IMREAD_GRAYSCALE)
 
@@ -174,12 +174,6 @@ def process(imgs):
 		g = Utils.div0(G,(B+G+R))
 		r = Utils.div0(R,(B+G+R))
 
-		# Bnorm, Gnorm, Rnorm = cv2.split(np.float32(imgNorm))
-		# bNorm = div0(Bnorm,(Bnorm+Gnorm+Rnorm))
-		# gNorm = div0(Gnorm,(Bnorm+Gnorm+Rnorm))
-		# rNorm = div0(Rnorm,(Bnorm+Gnorm+Rnorm))
-
-
 		# NGRDI
 		NGRDI = Utils.div0((G-R),(G+R))
 		cv2.normalize(NGRDI, NGRDI, 0.0, 1.0, cv2.NORM_MINMAX)
@@ -193,7 +187,7 @@ def process(imgs):
 
 		# CIVE
 		CIVE = 0.411*r - 0.881*g + 0.385*b + 18.78745
-		CIVE = 1 - cv2.normalize(CIVE, CIVE, 0.0, 1.0, cv2.NORM_MINMAX)
+		CIVE = 255 - cv2.normalize(CIVE, CIVE, 0.0, 255.0, cv2.NORM_MINMAX)
 		indices[2] = np.concatenate((indices[2], CIVE.ravel()))
 
 		# VEG
@@ -202,13 +196,13 @@ def process(imgs):
 		indices[3] = np.concatenate((indices[3], VEG.ravel()))
 
 		# ExGR
-		ExGR = g-(2.4*r)-b # OK?
+		ExGR = g-(2.4*r)-b
 		cv2.normalize(ExGR, ExGR, 0.0, 1.0, cv2.NORM_MINMAX)
 		indices[4] = np.concatenate((indices[4], ExGR.ravel()))
 
 		# WI
 		WI = Utils.div0((g-b),(r-g+255))
-		cv2.normalize(WI, WI, 0.0, 1.0, cv2.NORM_MINMAX)
+		cv2.normalize(WI, WI, 0.0, 255.0, cv2.NORM_MINMAX)
 		indices[5] = np.concatenate((indices[5], WI.ravel()))
 
 	plot_roc(gtAllImgs, indices, Utils.idxsLabels, "noFusion")
@@ -217,6 +211,7 @@ def process(imgs):
 
 
 def main():
+	global filterType
 	with open(args.inputList, 'r') as file:
 		lines = file.readlines()
 		imgs = []
