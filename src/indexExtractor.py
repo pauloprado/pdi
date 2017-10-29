@@ -178,7 +178,8 @@ def process(imgs):
 		indices[0] = np.concatenate((indices[0], NGRDI.ravel()))
 		# cv2.normalize(NGRDI, NGRDI, 0.0, 255.0, cv2.NORM_MINMAX)
 		# NGRDI = np.uint8(NGRDI)
-		# cv2.imwrite("NGRDI.jpg", NGRDI)
+		# cv2.imshow("NGRDI.jpg", NGRDI)
+
 		# ExG
 		# ExG = 2*gNorm-rNorm-bNorm
 		ExG = 2*g-r-b
@@ -191,7 +192,6 @@ def process(imgs):
 		# CIVE
 		CIVE = 0.411*R - 0.881*G + 0.385*B + 18.78745
 		CIVE = 1 - cv2.normalize(CIVE, CIVE, 0.0, 1.0, cv2.NORM_MINMAX)
-		#CIVE = cv2.normalize(CIVE, CIVE, 0.0, 1.0, cv2.NORM_MINMAX)
 		indices[2] = np.concatenate((indices[2], CIVE.ravel()))
 		# cv2.normalize(CIVE, CIVE, 0.0, 255.0, cv2.NORM_MINMAX)
 		# CIVE = np.uint8(CIVE)
@@ -214,7 +214,7 @@ def process(imgs):
 		# cv2.imwrite("ExGR.jpg", ExGR)
 
 		# WI
-		WI = Utils.div0((g-b),((r-g)))
+		WI = Utils.div0((g-b),(abs(r-g)+1))
 		cv2.normalize(WI, WI, 0.0, 1.0, cv2.NORM_MINMAX)
 		indices[5] = np.concatenate((indices[5], WI.ravel()))
 		# cv2.normalize(WI, WI, 0.0, 255.0, cv2.NORM_MINMAX)
