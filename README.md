@@ -338,3 +338,37 @@ Early fusion:
 
 [bilateral_lcrs2]: results_base2/noFusion_BilateralFilter.png
 [bilateral_early_lcrs2]: results_base2/earlyFusion_BilateralFilter.png
+
+-----------------
+Indices comparison blurred input
+-------------------
+
+Original
+![alt text][original]
+
+NGRDI
+![alt text][ngrdi]
+
+CIVE
+![alt text][cive]
+
+ExG
+![alt text][exg]
+
+ExGR
+![alt text][exgr]
+
+VEG
+![alt text][veg]
+
+WI
+![alt text][wi]
+
+[original]: indices/img20.png
+[ngrdi]: indices/NGRDI.jpg
+[cive]: indices/CIVE.jpg
+[exg]: indices/ExG.jpg
+[exgr]: indices/ExGR.jpg
+[veg]: indices/VEG.jpg
+[wi]: indices/WI.jpg
+
