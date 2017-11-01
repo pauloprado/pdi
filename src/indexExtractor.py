@@ -59,12 +59,12 @@ def plot_roc(label, targets, labels, fusion):
 		# Get position of all positive pixel (the position that isnt -1 value)
 		posPos = np.where(pos>-1)
 		# Build the array with only the values of positive class
-		posVec = [target[i] for i in posPos]
+		posVec = [target[j] for j in posPos]
 
 		''' The same as the previous, but now for the negative class '''
 		neg = np.where(1-label, target, -1)
 		negPos = np.where(neg>-1)
-		negVec = [target[i] for i in negPos]
+		negVec = [target[j] for j in negPos]
 		
 		# Use the Bob package from IDIAP
 		# Get the err value (Value where the False Acceptance Rate and the False Rejection Rate are equal)
@@ -176,50 +176,50 @@ def process(imgs):
 		NGRDI = Utils.div0((G-R),(G+R))
 		cv2.normalize(NGRDI, NGRDI, 0.0, 1.0, cv2.NORM_MINMAX)
 		indices[0] = np.concatenate((indices[0], NGRDI.ravel()))
-		# cv2.normalize(NGRDI, NGRDI, 0.0, 255.0, cv2.NORM_MINMAX)
-		# NGRDI = np.uint8(NGRDI)
-		# cv2.imshow("NGRDI.jpg", NGRDI)
+		cv2.normalize(NGRDI, NGRDI, 0.0, 255.0, cv2.NORM_MINMAX)
+		NGRDI = np.uint8(NGRDI)
+		cv2.imwrite("NGRDI.jpg", NGRDI)
 
 		# ExG
 		# ExG = 2*gNorm-rNorm-bNorm
 		ExG = 2*g-r-b
 		cv2.normalize(ExG, ExG, 0.0, 1.0, cv2.NORM_MINMAX)
 		indices[1] = np.concatenate((indices[1], ExG.ravel()))
-		# cv2.normalize(ExG, ExG, 0.0, 255.0, cv2.NORM_MINMAX)
-		# ExG = np.uint8(ExG)
-		# cv2.imwrite("ExG.jpg", ExG)
+		cv2.normalize(ExG, ExG, 0.0, 255.0, cv2.NORM_MINMAX)
+		ExG = np.uint8(ExG)
+		cv2.imwrite("ExG.jpg", ExG)
 
 		# CIVE
 		CIVE = 0.411*R - 0.881*G + 0.385*B + 18.78745
 		CIVE = 1 - cv2.normalize(CIVE, CIVE, 0.0, 1.0, cv2.NORM_MINMAX)
 		indices[2] = np.concatenate((indices[2], CIVE.ravel()))
-		# cv2.normalize(CIVE, CIVE, 0.0, 255.0, cv2.NORM_MINMAX)
-		# CIVE = np.uint8(CIVE)
-		# cv2.imwrite("CIVE.jpg", CIVE)
+		cv2.normalize(CIVE, CIVE, 0.0, 255.0, cv2.NORM_MINMAX)
+		CIVE = np.uint8(CIVE)
+		cv2.imwrite("CIVE.jpg", CIVE)
 
 		# VEG
 		VEG = Utils.div0(g, 2+(r**0.667)*(b**(1-0.667)))
 		cv2.normalize(VEG, VEG, 0.0, 1.0, cv2.NORM_MINMAX)
 		indices[3] = np.concatenate((indices[3], VEG.ravel()))
-		# cv2.normalize(VEG, VEG, 0.0, 255.0, cv2.NORM_MINMAX)
-		# VEG = np.uint8(VEG)
-		# cv2.imwrite("VEG.jpg", VEG)
+		cv2.normalize(VEG, VEG, 0.0, 255.0, cv2.NORM_MINMAX)
+		VEG = np.uint8(VEG)
+		cv2.imwrite("VEG.jpg", VEG)
 
 		# ExGR
 		ExGR = g-(2.4*r)-b
 		cv2.normalize(ExGR, ExGR, 0.0, 1.0, cv2.NORM_MINMAX)
 		indices[4] = np.concatenate((indices[4], ExGR.ravel()))
-		# cv2.normalize(ExGR, ExGR, 0.0, 255.0, cv2.NORM_MINMAX)
-		# ExGR = np.uint8(ExGR)
-		# cv2.imwrite("ExGR.jpg", ExGR)
+		cv2.normalize(ExGR, ExGR, 0.0, 255.0, cv2.NORM_MINMAX)
+		ExGR = np.uint8(ExGR)
+		cv2.imwrite("ExGR.jpg", ExGR)
 
 		# WI
 		WI = Utils.div0((g-b),(abs(r-g)+1))
 		cv2.normalize(WI, WI, 0.0, 1.0, cv2.NORM_MINMAX)
 		indices[5] = np.concatenate((indices[5], WI.ravel()))
-		# cv2.normalize(WI, WI, 0.0, 255.0, cv2.NORM_MINMAX)
-		# WI = np.uint8(WI)
-		# cv2.imwrite("WI.jpg", WI)
+		cv2.normalize(WI, WI, 0.0, 255.0, cv2.NORM_MINMAX)
+		WI = np.uint8(WI)
+		cv2.imwrite("WI.jpg", WI)
 
 	plot_roc(gtAllImgs, indices, Utils.idxsLabels, "noFusion")
 	early_fusion(gtAllImgs, indices)
