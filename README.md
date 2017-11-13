@@ -344,7 +344,7 @@ Indices comparison blurred input
 -------------------
 
 Original
-![alt text][original]
+![alt text](indices/img20.png =100x)
 
 NGRDI
 ![alt text][ngrdi]
@@ -364,13 +364,13 @@ VEG
 WI
 ![alt text][wi]
 
-[original]: indices/img20.png =150x
-[ngrdi]: indices/NGRDI.jpg =150x
-[cive]: indices/CIVE.jpg =150x
-[exg]: indices/ExG.jpg =150x
-[exgr]: indices/ExGR.jpg =150x
-[veg]: indices/VEG.jpg =150x
-[wi]: indices/WI.jpg =150x
+[original]: indices/img20.png
+[ngrdi]: indices/NGRDI.jpg
+[cive]: indices/CIVE.jpg
+[exg]: indices/ExG.jpg
+[exgr]: indices/ExGR.jpg
+[veg]: indices/VEG.jpg
+[wi]: indices/WI.jpg
 
 Database 1 - Individual sample analysis
 -------------
