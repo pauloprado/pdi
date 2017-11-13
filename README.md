@@ -4,15 +4,23 @@ Usage:
 python indexExtractor -i list.txt -f [filterType] -o outputdir
 
 Where the list.txt must have the img and the ground truth in the same line.
+
 [filterType]:
+
 0 -> No filter
+
 1 -> Blur
+
 2 -> Gaussian filter
+
 3 -> Mean filter
+
 4 -> Bilateral filter
+
 
 No filter results
 -------------
+
 |Method|AUC|EER|FAR|FRR|Accuracy|
 |:----------:|:-------------:|:------:|:------:|:------:|:------:|
 |NGRDI|0.824|0.286|0.267|0.267|0.733|
@@ -22,13 +30,13 @@ No filter results
 |ExGR|0.816|0.227|0.273|0.273|0.727|
 |WI|0.783|0.427|0.278|0.278|0.722|
 
--------------
+
 |Method|AUC|EER|FAR|FRR|Accuracy|
 |:----------:|:-------------:|:------:|:------:|:------:|:------:|
 |Arithmetic Mean|0.851|0.325|0.235|0.235|0.765|
 |Geometric mean|0.846|0.008|0.239|0.239|0.761|
 
--------------
+
 |Method|Accuracy|
 |:----------:|:-------------:|
 |Majority|0.737|
@@ -45,13 +53,13 @@ Blur results
 |ExGR|0.878|0.328|0.214|0.214|0.786|
 |WI|0.806|0.429|0.265|0.265|0.735|
 
--------------
+
 |Method|AUC|EER|FAR|FRR|Accuracy|
 |:----------:|:-------------:|:------:|:------:|:------:|:------:|
 |Arithmetic Mean|0.884|0.397|0.209|0.209|0.791|
 |Geometric mean|0.883|0.071|0.210|0.210|0.790|
 
--------------
+
 |Method|Accuracy|
 |:----------:|:-------------:|
 |Majority|0.767|
@@ -68,13 +76,13 @@ Gaussian filter results
 |ExGR|0.852|0.291|0.239|0.239|0.761|
 |WI|0.795|0.421|0.271|0.271|0.729|
 
--------------
+
 |Method|AUC|EER|FAR|FRR|Accuracy|
 |:----------:|:-------------:|:------:|:------:|:------:|:------:|
 |Arithmetic Mean|0.870|0.373|0.221|0.221|0.779|
 |Geometric mean|0.868|0.036|0.222|0.222|0.778|
 
--------------
+
 |Method|Accuracy|
 |:----------:|:-------------:|
 |Majority|0.753|
@@ -91,13 +99,13 @@ Mean filter results
 |ExGR|0.852|0.324|0.246|0.246|0.754|
 |WI|0.796|0.429|0.274|0.274|0.726|
 
--------------
+
 |Method|AUC|EER|FAR|FRR|Accuracy|
 |:----------:|:-------------:|:------:|:------:|:------:|:------:|
 |Arithmetic Mean|0.870|0.391|0.226|0.226|0.774|
 |Geometric mean|0.868|0.059|0.227|0.227|0.773|
 
--------------
+
 |Method|Accuracy|
 |:----------:|:-------------:|
 |Majority|0.744|
@@ -113,67 +121,40 @@ Bilateral filter results
 |ExGR|0.817|0.231|0.274|0.274|0.726|
 |WI|0.784|0.421|0.276|0.276|0.724|
 
--------------
+
 |Method|AUC|EER|FAR|FRR|Accuracy|
 |:----------:|:-------------:|:------:|:------:|:------:|:------:|
 |Arithmetic Mean|0.856|0.331|0.232|0.232|0.768|
 |Geometric mean|0.850|0.010|0.236|0.236|0.764|
 
--------------
+
 |Method|Accuracy|
 |:----------:|:-------------:|
 |Majority|0.736|
 
 
+| Original | Early Fusion |
+|:-------------------------:|:-------------------------:|
+|<img src="./results_base1/noFusion_NoFilter.png" width="400"> |<img src="./results_base1/earlyFusion_NoFilter.png" width="400"> |
+
+| Blur | Early Fusion |
+|:-------------------------:|:-------------------------:|
+|<img src="./results_base1/noFusion_Blur.png" width="400"> |<img src="./results_base1/earlyFusion_Blur.png" width="400"> |
+
+| Gaussian | Early Fusion |
+|:-------------------------:|:-------------------------:|
+|<img src="./results_base1/noFusion_GaussianFilter.png" width="400"> |<img src="./results_base1/earlyFusion_GaussianFilter.png" width="400"> |
+
+| Mean | Early Fusion |
+|:-------------------------:|:-------------------------:|
+|<img src="./results_base1/noFusion_MeanFilter.png" width="400"> |<img src="./results_base1/earlyFusion_MeanFilter.png" width="400"> |
+
+| Bilateral | Early Fusion |
+|:-------------------------:|:-------------------------:|
+|<img src="./results_base1/noFusion_BilateralFilter.png" width="400"> |<img src="./results_base1/earlyFusion_BilateralFilter.png" width="400"> |
 
 ------------------
 
-No filter: 
-![alt text][nofilter]
-
-Early fusion:
-![alt text][nofilter_early_fusion]
-
-[nofilter]: results_base1/noFusion_NoFilter.png
-[nofilter_early_fusion]: results_base1/earlyFusion_NoFilter.png
-
-Blur: 
-![alt text][blur]
-
-Early fusion:
-![alt text][blur_early]
-
-[blur]: results_base1/noFusion_Blur.png
-[blur_early]: results_base1/earlyFusion_Blur.png
-
-Gaussian filter: 
-![alt text][gaussian_blur]
-
-Early fusion:
-![alt text][gaussian_blur_early]
-
-[gaussian_blur]: results_base1/noFusion_GaussianFilter.png
-[gaussian_blur_early]: results_base1/earlyFusion_GaussianFilter.png
-
-Mean filter: 
-![alt text][mean]
-
-Early fusion:
-![alt text][mean_early]
-
-[mean]: results_base1/noFusion_MeanFilter.png
-[mean_early]: results_base1/earlyFusion_MeanFilter.png
-
-Bilateral filter: 
-![alt text][bilateral]
-
-Early fusion:
-![alt text][bilateral_early]
-
-[bilateral]: results_base1/noFusion_BilateralFilter.png
-[bilateral_early]: results_base1/earlyFusion_BilateralFilter.png
-
------------------
 Database LCRS2
 -------------------
 
@@ -188,13 +169,13 @@ No filter results
 |ExGR|0.777|0.374|0.302|0.302|0.698|
 |WI|0.835|0.399|0.231|0.231|0.769|
 
--------------
+
 |Method|AUC|EER|FAR|FRR|Accuracy|
 |:----------:|:-------------:|:------:|:------:|:------:|:------:|
 |Arithmetic Mean|0.842|0.391|0.241|0.241|0.759|
 |Geometric mean|0.839|0.058|0.244|0.244|0.756|
 
--------------
+
 |Method|Accuracy|
 |:----------:|:-------------:|
 |Majority|0.751|
@@ -210,13 +191,13 @@ Blur results
 |ExGR|0.860|0.462|0.212|0.212|0.788|
 |WI|0.813|0.418|0.252|0.252|0.748|
 
--------------
+
 |Method|AUC|EER|FAR|FRR|Accuracy|
 |:----------:|:-------------:|:------:|:------:|:------:|:------:|
 |Arithmetic Mean|0.881|0.457|0.193|0.193|0.807|
 |Geometric mean|0.882|0.261|0.193|0.193|0.807|
 
--------------
+
 |Method|Accuracy|
 |:----------:|:-------------:|
 |Majority|0.801|
@@ -233,13 +214,13 @@ Gaussian filter results
 |ExGR|0.840|0.432|0.240|0.240|0.760|
 |WI|0.820|0.409|0.247|0.247|0.753|
 
--------------
+
 |Method|AUC|EER|FAR|FRR|Accuracy|
 |:----------:|:-------------:|:------:|:------:|:------:|:------:|
 |Arithmetic Mean|0.874|0.436|0.204|0.204|0.796|
 |Geometric mean|0.874|0.169|0.204|0.204|0.796|
 
--------------
+
 |Method|Accuracy|
 |:----------:|:-------------:|
 |Majority|0.789|
@@ -257,13 +238,13 @@ Mean filter results
 |ExGR|0.845|0.454|0.226|0.226|0.774|
 |WI|0.826|0.426|0.240|0.240|0.760|
 
--------------
+
 |Method|AUC|EER|FAR|FRR|Accuracy|
 |:----------:|:-------------:|:------:|:------:|:------:|:------:|
 |Arithmetic Mean|0.876|0.456|0.199|0.199|0.801|
 |Geometric mean|0.876|0.255|0.199|0.199|0.801|
 
--------------
+
 |Method|Accuracy|
 |:----------:|:-------------:|
 |Majority|0.796|
@@ -281,96 +262,55 @@ Bilateral filter results
 |ExGR|0.793|0.380|0.293|0.293|0.707|
 |WI|0.830|0.399|0.239|0.239|0.761|
 
--------------
+
 |Method|AUC|EER|FAR|FRR|Accuracy|
 |:----------:|:-------------:|:------:|:------:|:------:|:------:|
 |Arithmetic Mean|0.850|0.401|0.235|0.235|0.765|
 |Geometric mean|0.847|0.074|0.237|0.237|0.763|
 
--------------
+
 |Method|Accuracy|
 |:----------:|:-------------:|
 |Majority|0.756|
 
-------------------
 
-No filter: 
-![alt text][nofilter_lcrs2]
+| Original | Early Fusion |
+|:-------------------------:|:-------------------------:|
+|<img src="./results_base2/noFusion_NoFilter.png" width="400"> |<img src="./results_base2/earlyFusion_NoFilter.png" width="400"> |
 
-Early fusion:
-![alt text][nofilter_early_fusion_lcrs2]
+| Blur | Early Fusion |
+|:-------------------------:|:-------------------------:|
+|<img src="./results_base2/noFusion_Blur.png" width="400"> |<img src="./results_base2/earlyFusion_Blur.png" width="400"> |
 
-[nofilter_lcrs2]: results_base2/noFusion_NoFilter.png
-[nofilter_early_fusion_lcrs2]: results_base2/earlyFusion_NoFilter.png
+| Gaussian | Early Fusion |
+|:-------------------------:|:-------------------------:|
+|<img src="./results_base2/noFusion_GaussianFilter.png" width="400"> |<img src="./results_base2/earlyFusion_GaussianFilter.png" width="400"> |
 
-Blur: 
-![alt text][blur_lcrs2]
+| Mean | Early Fusion |
+|:-------------------------:|:-------------------------:|
+|<img src="./results_base2/noFusion_MeanFilter.png" width="400"> |<img src="./results_base2/earlyFusion_MeanFilter.png" width="400"> |
 
-Early fusion:
-![alt text][blur_early_lcrs2]
-
-[blur_lcrs2]: results_base2/noFusion_Blur.png
-[blur_early_lcrs2]: results_base2/earlyFusion_Blur.png
-
-Gaussian filter: 
-![alt text][gaussian_blur_lcrs2]
-
-Early fusion:
-![alt text][gaussian_blur_early_lcrs2]
-
-[gaussian_blur_lcrs2]: results_base2/noFusion_GaussianFilter.png
-[gaussian_blur_early_lcrs2]: results_base2/earlyFusion_GaussianFilter.png
-
-Mean filter: 
-![alt text][mean_lcrs2]
-
-Early fusion:
-![alt text][mean_early_lcrs2]
-
-[mean_lcrs2]: results_base2/noFusion_MeanFilter.png
-[mean_early_lcrs2]: results_base2/earlyFusion_MeanFilter.png
-
-Bilateral filter: 
-![alt text][bilateral_lcrs2]
-
-Early fusion:
-![alt text][bilateral_early_lcrs2]
-
-[bilateral_lcrs2]: results_base2/noFusion_BilateralFilter.png
-[bilateral_early_lcrs2]: results_base2/earlyFusion_BilateralFilter.png
+| Bilateral | Early Fusion |
+|:-------------------------:|:-------------------------:|
+|<img src="./results_base2/noFusion_BilateralFilter.png" width="400"> |<img src="./results_base2/earlyFusion_BilateralFilter.png" width="400"> |
 
 -----------------
+
 Indices comparison blurred input
 -------------------
 
-Original
-![alt text](./indices/img20.png =100x)
+|Original         | 
+|:-------------------------:|
+|<img src="./indices/img20.png" width="200">  |
 
-NGRDI
-![alt text][ngrdi]
+| NGRDI | CIVE | ExG |
+|:-------------------------:|:-------------------------:|:-------------------------:|
+|<img src="./indices/NGRDI.jpg" width="200"> |<img src="./indices/CIVE.jpg" width="200"> |<img src="./indices/ExG.jpg" width="200"> |
 
-CIVE
-![alt text][cive]
+| ExGR | VEG | WI |
+|:-------------------------:|:-------------------------:|:-------------------------:|
+|<img src="./indices/ExGR.jpg" width="200"> |<img src="./indices/VEG.jpg" width="200"> |<img src="./indices/WI.jpg" width="200"> | 
 
-ExG
-![alt text][exg]
-
-ExGR
-![alt text][exgr]
-
-VEG
-![alt text][veg]
-
-WI
-![alt text][wi]
-
-[original]: indices/img20.png
-[ngrdi]: indices/NGRDI.jpg
-[cive]: indices/CIVE.jpg
-[exg]: indices/ExG.jpg
-[exgr]: indices/ExGR.jpg
-[veg]: indices/VEG.jpg
-[wi]: indices/WI.jpg
 
 Database 1 - Individual sample analysis
 -------------
@@ -394,3 +334,4 @@ Database 2 - Individual sample analysis
 
 EER
 0.396,0.415,0.506,0.411,0.300,0.356,0.441,0.344,0.492,0.547,0.535,0.567,0.595,0.515,0.702,0.601,0.644
+
