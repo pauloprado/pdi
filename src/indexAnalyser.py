@@ -10,6 +10,7 @@ import Utils
 
 # Hold the eer (Equal error rate) for each index
 eers = []
+aucs = []
 
 # Argument parsing
 parser = argparse.ArgumentParser(description='Extract vegetation indexes.')
@@ -29,9 +30,9 @@ def plot_roc(label, target, labels, fusion):
 	print("|:----------:|:-------------:|:------:|:------:|:------:|:------:|")
 	# Use SKLearn to get the False Positive Rate (fpr), True Positive Rate(tpr)
 	fpr, tpr, thresholds = metrics.roc_curve(label, target)
-
-	print("%.3f" % metrics.roc_auc_score(label, target),end='')
-
+	auc = metrics.roc_auc_score(label, target)
+	print("%.3f" % auc,end='')
+	aucs.append(auc)
 	# Build an array where positive class will the their values, but the negative class will receive -1
 	pos = np.where(label, target, -1)
 	# Get position of all positive pixel (the position that isnt -1 value)
@@ -62,8 +63,19 @@ def plot_roc(label, target, labels, fusion):
 	# # plt.show()
 	# plt.savefig(Utils.buildFileName(filterType, fusion, args.outputDir))
 	# plt.clf()
+
+def plotBoxPlot(data, label):
+	plt.legend()
+	plt.xlabel(label)
+	plt.figure()
+	plt.boxplot(data)
+	plt.show()
+	plt.savefig(label+"jpg")
+	plt.clf()
 '''
 	
+
+
 '''
 def process(imgs):
 	indices = [np.array([])]*6
@@ -88,6 +100,8 @@ def process(imgs):
 
 		plot_roc(gt.ravel(), NGRDI.ravel(), Utils.idxsLabels, "noFusion")
 
+	plotBoxPlot(eers, "eer")
+	plotBoxPlot(aucs, "auc")
 
 def main():
 	with open(args.inputList, 'r') as file:
