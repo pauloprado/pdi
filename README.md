@@ -344,7 +344,7 @@ Indices comparison blurred input
 -------------------
 
 Original
-![alt text](indices/img20.png =100x)
+![alt text](./indices/img20.png =100x)
 
 NGRDI
 ![alt text][ngrdi]
