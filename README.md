@@ -326,7 +326,7 @@ EER
 
 Database 2 - Individual sample analysis
 -------------
-||Mean|Standard deviation|
+|Mean|Standard deviation|
 |:----------:|:-------------:|:------:|
 |AUC|0.912412|0.055023|
 |Accuracy|0.848118|0.0.061750|
@@ -335,3 +335,19 @@ Database 2 - Individual sample analysis
 EER
 0.396,0.415,0.506,0.411,0.300,0.356,0.441,0.344,0.492,0.547,0.535,0.567,0.595,0.515,0.702,0.601,0.644
 
+BoxPlot
+-------------
+
+|Data|NGRDI|NGRDI + Blur |CIVE|CIVE + Blur|
+|:----------:|:----------:|:----------:|:----------:|:----------:|
+|AUC|<img src="./boxplot/ngrdi_auc.png" width="200">|<img src="./boxplot/ngrdi_blur_auc.png" width="200">|<img src="./boxplot/cive_auc.png" width="200">|<img src="./boxplot/cive_blur_auc.png" width="200">|
+|EER|<img src="./boxplot/ngrdi_eer.png" width="200">|<img src="./boxplot/ngrdi_blur_eer.png" width="200">|<img src="./boxplot/cive_eer.png" width="200">|<img src="./boxplot/cive_blur_eer.png" width="200">|
+|AUC|<img src="./boxplot/ngrdi_auc_2.png" width="200">|<img src="./boxplot/ngrdi_blur_auc_2.png" width="200">|<img src="./boxplot/cive_auc_2.png" width="200">|<img src="./boxplot/cive_blur_auc_2.png" width="200">|
+|EER|<img src="./boxplot/ngrdi_eer_2.png" width="200">|<img src="./boxplot/ngrdi_blur_eer_2.png" width="200">|<img src="./boxplot/cive_eer_2.png" width="200">|<img src="./boxplot/cive_blur_eer_2.png" width="200">|
+
+Best and worst result
+-------------
+|NGRDI|NGRDI + Blur|CIVE|CIVE + Blur|
+|:----------:|:----------:|:----------:|:----------:|
+|<img src="./bestImage/NGRDI_best_noBlur.jpg" width="200">|<img src="./bestImage/NGRDI_best_blur.jpg" width="200">|<img src="./bestImage/CIVE_best_noBlur.jpg" width="200">|<img src="./bestImage/CIVE_best_blur.jpg" width="200">|
+|<img src="./worstImage/NGRDI_worst_noBlur.jpg" width="200">|<img src="./worstImage/NGRDI_worst_blur.jpg" width="200">|<img src="./worstImage/CIVE_worst_noBlur.jpg" width="200">|<img src="./worstImage/CIVE_worst_blur.jpg" width="200">|
