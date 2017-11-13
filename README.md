@@ -326,10 +326,10 @@ EER
 
 Database 2 - Individual sample analysis
 -------------
-|Mean|Standard deviation|
+||Mean|Standard deviation|
 |:----------:|:-------------:|:------:|
 |AUC|0.912412|0.055023|
-|Accuracy|0.848118|0.0.061750|
+|Accuracy|0.848118|0.061750|
 
 
 EER
