@@ -340,10 +340,10 @@ BoxPlot
 
 |Data|NGRDI|NGRDI + Blur |CIVE|CIVE + Blur|
 |:----------:|:----------:|:----------:|:----------:|:----------:|
-|AUC|<img src="./boxplot/ngrdi_auc.png" width="200">|<img src="./boxplot/ngrdi_blur_auc.png" width="200">|<img src="./boxplot/cive_auc.png" width="200">|<img src="./boxplot/cive_blur_auc.png" width="200">|
-|EER|<img src="./boxplot/ngrdi_eer.png" width="200">|<img src="./boxplot/ngrdi_blur_eer.png" width="200">|<img src="./boxplot/cive_eer.png" width="200">|<img src="./boxplot/cive_blur_eer.png" width="200">|
-|AUC|<img src="./boxplot/ngrdi_auc_2.png" width="200">|<img src="./boxplot/ngrdi_blur_auc_2.png" width="200">|<img src="./boxplot/cive_auc_2.png" width="200">|<img src="./boxplot/cive_blur_auc_2.png" width="200">|
-|EER|<img src="./boxplot/ngrdi_eer_2.png" width="200">|<img src="./boxplot/ngrdi_blur_eer_2.png" width="200">|<img src="./boxplot/cive_eer_2.png" width="200">|<img src="./boxplot/cive_blur_eer_2.png" width="200">|
+|AUC|<img src="./boxplot/AUC_ngrdi.png" width="200">|<img src="./boxplot/AUC_ngrdi_blur.png" width="200">|<img src="./boxplot/AUC_cive.png" width="200">|<img src="./boxplot/AUC_cive_blur.png" width="200">|
+|EER|<img src="./boxplot/EER_ngrdi.png" width="200">|<img src="./boxplot/EER_ngrdi_blur.png" width="200">|<img src="./boxplot/EER_cive.png" width="200">|<img src="./boxplot/EER_cive_blur.png" width="200">|
+|AUC|<img src="./boxplot/AUC_ngrdi_2.png" width="200">|<img src="./boxplot/AUC_ngrdi_blur_2.png" width="200">|<img src="./boxplot/AUC_cive_2.png" width="200">|<img src="./boxplot/AUC_cive_blur_2.png" width="200">|
+|EER|<img src="./boxplot/EER_ngrdi_2.png" width="200">|<img src="./boxplot/EER_ngrdi_blur_2.png" width="200">|<img src="./boxplot/EER_cive_2.png" width="200">|<img src="./boxplot/EER_cive_blur_2.png" width="200">|
 
 Best and worst result
 -------------
