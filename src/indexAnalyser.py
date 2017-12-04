@@ -15,8 +15,9 @@ aucs = []
 # Argument parsing
 parser = argparse.ArgumentParser(description='Extract vegetation indexes.')
 parser.add_argument('-i', action='store', dest='inputList')
+parser.add_argument('-d', action='store', dest='database')
 parser.add_argument('-f', action='store', dest='filterType')
-parser.add_argument('-o', action='store', dest='outputDir')
+parser.add_argument('-m', action='store', dest='method')
 args = parser.parse_args()
 
 '''
@@ -26,8 +27,8 @@ args = parser.parse_args()
 	@param labels Label of each curve that will be plotted
 '''
 def plot_roc(label, target, labels, fusion):
-	print("\n-------------\n|Method|AUC|EER|FAR|FRR|Accuracy|")
-	print("|:----------:|:-------------:|:------:|:------:|:------:|:------:|")
+	print("\n-------------\n|AUC|EER|FAR|FRR|Accuracy|")
+	print("|:-------------:|:------:|:------:|:------:|:------:|")
 	# Use SKLearn to get the False Positive Rate (fpr), True Positive Rate(tpr)
 	fpr, tpr, thresholds = metrics.roc_curve(label, target)
 	auc = metrics.roc_auc_score(label, target)
@@ -52,7 +53,7 @@ def plot_roc(label, target, labels, fusion):
 	eers.append(eer)
 
 	prediction = np.where(target >= eer, 1, 0)
-	acc = metrics.accuracy_score(label, prediction)
+	acc = metrics.balanced_accuracy_score(label, prediction)
 
 	print("|"+"%.3f" % eer+"|"+"%.3f" % far+"|"+"%.3f" % frr+"|"+"%.3f" % acc+"|")
 
@@ -64,25 +65,41 @@ def plot_roc(label, target, labels, fusion):
 	# plt.savefig(Utils.buildFileName(filterType, fusion, args.outputDir))
 	# plt.clf()
 
-def plotBoxPlot(data, label):
-	plt.legend()
-	plt.xlabel(label)
-	plt.figure()
+def plotBoxPlot(data, label, blur, method, db):
+	axes = plt.gca()
+	# axes.set_xlim([xmin,xmax])
+	if(label == "EER"):
+		axes.set_ylim([0.1,0.8])
+	else:
+		axes.set_ylim([0.7,1])
 	plt.boxplot(data)
-	plt.show()
-	plt.savefig(label+"jpg")
+	plt.legend()
+	plt.ylabel(label)
+	saveStr = ""
+	if(blur):
+		saveStr = "../boxplot/"+label+"_"+method+"_blur_"+db
+	else:
+		saveStr = "../boxplot/"+label+"_"+method+"_"+db
+
+	plt.savefig(saveStr+".jpg")
+	# plt.show()
 	plt.clf()
 '''
 	
 
 
 '''
-def process(imgs):
+def process(imgs, database, filterType, method):
 	indices = [np.array([])]*6
 	for i in imgs:
 		indexes = []
+		blur = False
 		# Read original image and the ground truth
-		img = cv2.blur(cv2.imread(i[0], cv2.IMREAD_COLOR),(5,5))
+		img = cv2.imread(i[0], cv2.IMREAD_COLOR);
+		if(filterType == "1"):
+			img = cv2.blur(cv2.imread(i[0], cv2.IMREAD_COLOR),(5,5))
+			blur = True
+		
 		gt = cv2.imread(i[1], cv2.IMREAD_GRAYSCALE)
 
 		# Normalize the ground truth
@@ -94,23 +111,27 @@ def process(imgs):
 		# NGRDI
 		NGRDI = Utils.div0((G-R),(G+R))
 		cv2.normalize(NGRDI, NGRDI, 0.0, 1.0, cv2.NORM_MINMAX)
-		# cv2.normalize(NGRDI, NGRDI, 0.0, 255.0, cv2.NORM_MINMAX)
-		# NGRDI = np.uint8(NGRDI)
-		# cv2.imwrite("NGRDI.jpg", NGRDI)
 
-		plot_roc(gt.ravel(), NGRDI.ravel(), Utils.idxsLabels, "noFusion")
+		CIVE = 0.411*R - 0.881*G + 0.385*B + 18.78745
+		CIVE = 1 - cv2.normalize(CIVE, CIVE, 0.0, 1.0, cv2.NORM_MINMAX)
+		if(method == "CIVE"):
+			plot_roc(gt.ravel(), CIVE.ravel(), Utils.idxsLabels, "noFusion")
+		elif(method == "NGRDI"):
+			plot_roc(gt.ravel(), NGRDI.ravel(), Utils.idxsLabels, "noFusion")
 
-	plotBoxPlot(eers, "eer")
-	plotBoxPlot(aucs, "auc")
+	plotBoxPlot(eers, "EER", blur, method, database)
+	plotBoxPlot(aucs, "AUC", blur, method, database)
 
 def main():
+	print(metrics.balanced_accuracy_score([1,1,1,1],[1,1,0,1]))
 	with open(args.inputList, 'r') as file:
 		lines = file.readlines()
 		imgs = []
 		for line in lines:
 			imgs.append(line.rstrip().split(' '))
-	process(imgs)
+	process(imgs, args.database, args.filterType, args.method)
 if __name__=='__main__':
 	main()
+
 
 

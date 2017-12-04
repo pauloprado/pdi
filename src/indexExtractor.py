@@ -8,6 +8,9 @@ from sklearn import metrics
 import matplotlib.pyplot as plt
 import Utils
 
+from joblib import Parallel, delayed
+import multiprocessing
+
 # Hold the eer (Equal error rate) for each index
 eers = []
 
@@ -19,6 +22,65 @@ parser.add_argument('-o', action='store', dest='outputDir')
 args = parser.parse_args()
 
 filterType = 0
+
+def parallel(j, pos, indP, indF):
+	if(j in pos[0]):
+		indP[j]=1
+		indF[j]=0
+	else:
+		indP[j]=0
+		indF[j]=1
+
+def balanced_accuracy(label, predicted):
+    k = [0,1]
+    E = [None]*2
+    for i in range(0,2):
+        pos = np.where(label==k[i])
+        indP = [None]*label.shape[0]
+        indF = [None]*label.shape[0]
+
+        num_cores = multiprocessing.cpu_count()
+        Parallel(n_jobs=num_cores)(delayed(parallel)(i, pos, indP, indF) for i in range(0,label.shape[0]))
+        # for j in range(0,label.shape[0]):
+        #     if(j%10000 == 0):
+        #         print(j)
+        #     if(j in pos[0]):
+        #         indP[j]=1
+        #         indF[j]=0
+        #     else:
+        #         indP[j]=0
+                # indF[j]=1
+        
+        Nc = len(np.where(label == k[i])[0])
+        
+        a=[]
+        print("len "+len(indF))
+        for j in range(0,len(indF)):
+            if(indF[j] == 1):
+                a.append(j)
+        posVec = [predicted[j] for j in a]
+
+        FP = 0
+        for j in range(0, len(a)):
+            if(predicted[a[j]] == k[i]):
+                FP = FP+1
+        e1 = float(FP)/(label.shape[0] - Nc)
+        
+        b=[]
+        for j in range(0,len(indP)):
+            if(indP[j] == 1):
+                b.append(j)
+        posVec = [predicted[j] for j in b]
+
+        FN = 0
+        for j in range(0, len(b)):
+            if(predicted[b[j]] != k[i]):
+                FN = FN+1
+        
+        e2 = float(FN)/Nc
+        
+        E[i] = e1+e2
+    return 1 - sum(E)/4
 
 '''
 	Calculate the accuracy
@@ -43,6 +105,9 @@ def plot_roc(label, targets, labels, fusion):
 	print("\n-------------\n|Method|AUC|EER|FAR|FRR|Accuracy|")
 	print("|:----------:|:-------------:|:------:|:------:|:------:|:------:|")
 	for target in targets:
+		# if(np.any(np.isnan(target))):
+		target[ ~ np.isfinite( target )] = 0
+		# target[ ~ np.isnan( target )] = 0
 		# Use SKLearn to get the False Positive Rate (fpr), True Positive Rate(tpr)
 		fpr, tpr, thresholds = metrics.roc_curve(label, target)
 
@@ -73,7 +138,7 @@ def plot_roc(label, targets, labels, fusion):
 		eers.append(eer)
 
 		prediction = np.where(target >= eer, 1, 0)
-		acc = metrics.accuracy_score(label, prediction)
+		acc = metrics.balanced_accuracy_score(label, prediction)
 
 		print("|"+"%.3f" % eer+"|"+"%.3f" % far+"|"+"%.3f" % frr+"|"+"%.3f" % acc+"|")
 
@@ -157,10 +222,16 @@ def process(imgs):
 	indices = [np.array([])]*6
 	for i in imgs:
 		indexes = []
+
 		# Read original image and the ground truth
 		img = filterImg(i[0])
 		gt = cv2.imread(i[1], cv2.IMREAD_GRAYSCALE)
 
+		y,x = gt.shape
+		if(img.shape != gt.shape):
+			y, x = gt.shape
+			img = img[0:y,0:x,]
+		
 		# Normalize the ground truth
 		cv2.normalize(gt, gt, 0.0, 1.0, cv2.NORM_MINMAX)
 		# Build a vector with all the ground truths
@@ -176,50 +247,50 @@ def process(imgs):
 		NGRDI = Utils.div0((G-R),(G+R))
 		cv2.normalize(NGRDI, NGRDI, 0.0, 1.0, cv2.NORM_MINMAX)
 		indices[0] = np.concatenate((indices[0], NGRDI.ravel()))
-		cv2.normalize(NGRDI, NGRDI, 0.0, 255.0, cv2.NORM_MINMAX)
-		NGRDI = np.uint8(NGRDI)
-		cv2.imwrite("NGRDI.jpg", NGRDI)
+		# cv2.normalize(NGRDI, NGRDI, 0.0, 255.0, cv2.NORM_MINMAX)
+		# NGRDI = np.uint8(NGRDI)
+		# cv2.imwrite("NGRDI.jpg", NGRDI)
 
 		# ExG
 		# ExG = 2*gNorm-rNorm-bNorm
 		ExG = 2*g-r-b
 		cv2.normalize(ExG, ExG, 0.0, 1.0, cv2.NORM_MINMAX)
 		indices[1] = np.concatenate((indices[1], ExG.ravel()))
-		cv2.normalize(ExG, ExG, 0.0, 255.0, cv2.NORM_MINMAX)
-		ExG = np.uint8(ExG)
-		cv2.imwrite("ExG.jpg", ExG)
+		# cv2.normalize(ExG, ExG, 0.0, 255.0, cv2.NORM_MINMAX)
+		# ExG = np.uint8(ExG)
+		# cv2.imwrite("ExG.jpg", ExG)
 
 		# CIVE
 		CIVE = 0.411*R - 0.881*G + 0.385*B + 18.78745
 		CIVE = 1 - cv2.normalize(CIVE, CIVE, 0.0, 1.0, cv2.NORM_MINMAX)
 		indices[2] = np.concatenate((indices[2], CIVE.ravel()))
-		cv2.normalize(CIVE, CIVE, 0.0, 255.0, cv2.NORM_MINMAX)
-		CIVE = np.uint8(CIVE)
-		cv2.imwrite("CIVE.jpg", CIVE)
+		# cv2.normalize(CIVE, CIVE, 0.0, 255.0, cv2.NORM_MINMAX)
+		# CIVE = np.uint8(CIVE)
+		# cv2.imwrite("CIVE.jpg", CIVE)
 
 		# VEG
 		VEG = Utils.div0(g, 2+(r**0.667)*(b**(1-0.667)))
 		cv2.normalize(VEG, VEG, 0.0, 1.0, cv2.NORM_MINMAX)
 		indices[3] = np.concatenate((indices[3], VEG.ravel()))
-		cv2.normalize(VEG, VEG, 0.0, 255.0, cv2.NORM_MINMAX)
-		VEG = np.uint8(VEG)
-		cv2.imwrite("VEG.jpg", VEG)
+		# cv2.normalize(VEG, VEG, 0.0, 255.0, cv2.NORM_MINMAX)
+		# VEG = np.uint8(VEG)
+		# cv2.imwrite("VEG.jpg", VEG)
 
 		# ExGR
 		ExGR = g-(2.4*r)-b
 		cv2.normalize(ExGR, ExGR, 0.0, 1.0, cv2.NORM_MINMAX)
 		indices[4] = np.concatenate((indices[4], ExGR.ravel()))
-		cv2.normalize(ExGR, ExGR, 0.0, 255.0, cv2.NORM_MINMAX)
-		ExGR = np.uint8(ExGR)
-		cv2.imwrite("ExGR.jpg", ExGR)
+		# cv2.normalize(ExGR, ExGR, 0.0, 255.0, cv2.NORM_MINMAX)
+		# ExGR = np.uint8(ExGR)
+		# cv2.imwrite("ExGR.jpg", ExGR)
 
 		# WI
 		WI = Utils.div0((g-b),(abs(r-g)+1))
 		cv2.normalize(WI, WI, 0.0, 1.0, cv2.NORM_MINMAX)
 		indices[5] = np.concatenate((indices[5], WI.ravel()))
-		cv2.normalize(WI, WI, 0.0, 255.0, cv2.NORM_MINMAX)
-		WI = np.uint8(WI)
-		cv2.imwrite("WI.jpg", WI)
+		# cv2.normalize(WI, WI, 0.0, 255.0, cv2.NORM_MINMAX)
+		# WI = np.uint8(WI)
+		# cv2.imwrite("WI.jpg", WI)
 
 	plot_roc(gtAllImgs, indices, Utils.idxsLabels, "noFusion")
 	early_fusion(gtAllImgs, indices)
@@ -227,6 +298,9 @@ def process(imgs):
 
 
 def main():
+	# y_true = [1, 1, 1, 0]
+	# y_pred = [1, 1, 0, 0]
+	# print(metrics.balanced_accuracy_score(y_true,y_pred))
 	global filterType
 	with open(args.inputList, 'r') as file:
 		lines = file.readlines()
